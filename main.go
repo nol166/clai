@@ -18,10 +18,8 @@ var version = "dev"
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: clai <query>")
-		fmt.Fprintln(os.Stderr, "       clai config [list | set <key> <value>]")
-		fmt.Fprintln(os.Stderr, "       clai models list")
-		os.Exit(1)
+		printHelp()
+		os.Exit(0)
 	}
 
 	// extract -c/--copy flag
