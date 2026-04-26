@@ -2,13 +2,16 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"golang.org/x/term"
 
 	"github.com/nol166/clai/internal/config"
+	"github.com/nol166/clai/internal/provider"
 )
 
 func runConfig(args []string) {
@@ -88,6 +91,9 @@ func runConfigSet(key, value string) {
 			os.Exit(1)
 		}
 		cfg.Provider = value
+		if value == "ollama" {
+			cfg.APIKey = ""
+		}
 		if cfg.Model == "" || isDefaultModel(cfg.Model) {
 			cfg.Model = defaultModelFor(value)
 		}
@@ -144,22 +150,11 @@ func runConfigInteractive() {
 		} else if len(keyBytes) > 0 {
 			cfg.APIKey = string(keyBytes)
 		}
+	} else {
+		cfg.APIKey = ""
 	}
 
-	// model
-	defaultModel := defaultModelFor(cfg.Provider)
-	current := cfg.Model
-	if current == "" {
-		current = defaultModel
-	}
-	fmt.Printf("Model [%s]: ", current)
-	if m := readLine(reader); m != "" {
-		cfg.Model = m
-	} else if cfg.Model == "" {
-		cfg.Model = defaultModel
-	}
-
-	// base url (only relevant for litellm/ollama)
+	// base url (only relevant for litellm/ollama) — before model so we can query the provider
 	if cfg.Provider == "litellm" || cfg.Provider == "ollama" {
 		defaultURL := defaultBaseURLFor(cfg.Provider)
 		hint := cfg.BaseURL
@@ -171,6 +166,44 @@ func runConfigInteractive() {
 			cfg.BaseURL = u
 		} else if cfg.BaseURL == "" {
 			cfg.BaseURL = defaultURL
+		}
+	}
+
+	// model — try to fetch live list from provider; fall back to free-form
+	defaultModel := defaultModelFor(cfg.Provider)
+	current := cfg.Model
+	if current == "" {
+		current = defaultModel
+	}
+	var liveModels []string
+	if p, err := provider.New(cfg); err == nil {
+		liveModels, _ = p.ListModels(context.Background())
+	}
+	if len(liveModels) > 0 {
+		fmt.Println("Available models:")
+		for i, m := range liveModels {
+			marker := ""
+			if m == current {
+				marker = "  *"
+			}
+			fmt.Printf("  %d) %s%s\n", i+1, m, marker)
+		}
+		fmt.Printf("Model (number or name) [%s]: ", current)
+		if m := readLine(reader); m != "" {
+			if idx, err := strconv.Atoi(m); err == nil && idx >= 1 && idx <= len(liveModels) {
+				cfg.Model = liveModels[idx-1]
+			} else {
+				cfg.Model = m
+			}
+		} else if cfg.Model == "" {
+			cfg.Model = defaultModel
+		}
+	} else {
+		fmt.Printf("Model [%s]: ", current)
+		if m := readLine(reader); m != "" {
+			cfg.Model = m
+		} else if cfg.Model == "" {
+			cfg.Model = defaultModel
 		}
 	}
 
