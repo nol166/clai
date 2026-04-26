@@ -12,7 +12,8 @@ const asciiLogo = `
 
 func printLogo() {
 	fmt.Printf("\033[38;5;99m%s\033[0m\n", asciiLogo)
-	fmt.Print("  \033[2mask your terminal anything\033[0m\n\n")
+	fmt.Print("  \033[2mask your terminal anything\033[0m\n")
+	fmt.Printf("  \033[2mversion %s\033[0m\n\n", getVersion())
 }
 
 func printHelp() {
