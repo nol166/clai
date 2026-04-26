@@ -20,8 +20,12 @@ func getVersion() string {
 	if version != "dev" {
 		return version
 	}
-	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
-		return info.Main.Version
+	if info, ok := debug.ReadBuildInfo(); ok {
+		v := info.Main.Version
+		// only use clean semver tags, not pseudo-versions from local builds
+		if len(v) > 0 && v[0] == 'v' && !strings.Contains(v, "-0.") {
+			return v
+		}
 	}
 	return version
 }
