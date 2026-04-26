@@ -113,7 +113,8 @@ func runConfigInteractive() {
 	reader := bufio.NewReader(os.Stdin)
 
 	printLogo()
-	fmt.Println("Configure clai — press Enter to keep current value\n")
+	fmt.Println("Configure clai — press Enter to keep current value")
+	fmt.Println()
 
 	// provider
 	fmt.Printf("Provider (openai/anthropic/litellm/ollama) [%s]: ", cfg.Provider)
