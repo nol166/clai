@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.3](https://github.com/nol166/clai/compare/v0.1.2...v0.1.3) (2026-04-26)
+
+
+### Bug Fixes
+
+* checkout tagged commit for goreleaser build ([8a449da](https://github.com/nol166/clai/commit/8a449da46510c042a67b44731262551169c734a1))
+* remove double-evaluation in goreleaser if condition ([1c3182a](https://github.com/nol166/clai/commit/1c3182aca2aa2f906cc283e2b9f8d74288bd4ec7))
+* run goreleaser from release-please job to bypass GITHUB_TOKEN restriction ([0f4c6ac](https://github.com/nol166/clai/commit/0f4c6ace17cb6e6bfa75d019216a39a9b05c87b8))
+* run goreleaser from release-please job to bypass GITHUB_TOKEN restriction ([1877380](https://github.com/nol166/clai/commit/1877380623127229112974655994140413cdb3ad))
+
 ## [0.1.2](https://github.com/nol166/clai/compare/v0.1.1...v0.1.2) (2026-04-26)
 
 
