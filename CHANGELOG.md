@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/nol166/clai/compare/v0.1.3...v0.1.4) (2026-04-26)
+
+
+### Bug Fixes
+
+* show module version when installed via go install ([450a326](https://github.com/nol166/clai/commit/450a32638eb455a8827cb6a741e7e8be4f448e86))
+* show module version when installed via go install ([c800f1f](https://github.com/nol166/clai/commit/c800f1f97689aa10db95ce684ca3b79efbc98155))
+
 ## [0.1.3](https://github.com/nol166/clai/compare/v0.1.2...v0.1.3) (2026-04-26)
 
 
