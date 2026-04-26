@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/nol166/clai/internal/config"
@@ -14,6 +15,16 @@ import (
 )
 
 var version = "dev"
+
+func getVersion() string {
+	if version != "dev" {
+		return version
+	}
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+	return version
+}
 
 func main() {
 	args := os.Args[1:]
@@ -36,7 +47,7 @@ func main() {
 
 	switch args[0] {
 	case "--version", "-v":
-		fmt.Println("clai", version)
+		fmt.Println("clai", getVersion())
 		return
 	case "--help", "-h":
 		printHelp()
