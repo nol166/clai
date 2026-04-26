@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/johnmccambridge/clai/internal/config"
+	"github.com/nol166/clai/internal/config"
 )
 
 const defaultOpenAIBase = "https://api.openai.com/v1"

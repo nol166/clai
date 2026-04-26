@@ -1,4 +1,4 @@
-module github.com/johnmccambridge/clai
+module github.com/nol166/clai
 
 go 1.22.0
 

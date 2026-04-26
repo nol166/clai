@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/johnmccambridge/clai/internal/config"
-	"github.com/johnmccambridge/clai/internal/provider"
+	"github.com/nol166/clai/internal/config"
+	"github.com/nol166/clai/internal/provider"
 )
 
 func runModels(args []string) {

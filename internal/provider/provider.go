@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/johnmccambridge/clai/internal/config"
+	"github.com/nol166/clai/internal/config"
 )
 
 // Provider streams a response and can list available models.

@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/johnmccambridge/clai/internal/config"
+	"github.com/nol166/clai/internal/config"
 )
 
 func runConfig(args []string) {
