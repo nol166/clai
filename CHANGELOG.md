@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/nol166/clai/compare/v0.2.0...v0.2.1) (2026-04-26)
+
+
+### Bug Fixes
+
+* remove redundant CI push trigger on release-please branch ([b50fba0](https://github.com/nol166/clai/commit/b50fba087a88492bfbc24e31af9f38e7e4b01538))
+* remove redundant push trigger on release-please branch from CI ([f4e3101](https://github.com/nol166/clai/commit/f4e31011d997f57cffb90abb4030373c95c14c9a))
+
 ## [0.2.0](https://github.com/nol166/clai/compare/v0.1.4...v0.2.0) (2026-04-26)
 
 
