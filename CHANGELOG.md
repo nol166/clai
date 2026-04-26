@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/nol166/clai/compare/v0.2.1...v0.2.2) (2026-04-26)
+
+
+### Bug Fixes
+
+* use PAT for release-please so CI triggers on release PRs ([d4a564c](https://github.com/nol166/clai/commit/d4a564c4ff1543abbf77f03756f5182cefd1c982))
+
 ## [0.2.1](https://github.com/nol166/clai/compare/v0.2.0...v0.2.1) (2026-04-26)
 
 
