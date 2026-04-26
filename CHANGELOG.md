@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/nol166/clai/compare/v0.1.4...v0.2.0) (2026-04-26)
+
+
+### Features
+
+* show version under logo in help output ([451eeb2](https://github.com/nol166/clai/commit/451eeb229b806cf87341695749e6092e333fe0c0))
+
+
+### Bug Fixes
+
+* remove API key when setting different provider; fix model select… ([d47d6e9](https://github.com/nol166/clai/commit/d47d6e994e47fb7390ffb3a72ae218bc607d855e))
+* remove API key when setting different provider; fix model selection by showing a list of models instead of hardcoding defaults ([6015d42](https://github.com/nol166/clai/commit/6015d42de6a5b18769caffc783ce9388e5c0034c))
+* run CI on release-please branch so build check reports on release PRs ([0eec578](https://github.com/nol166/clai/commit/0eec5786a343ca91321b4f4c46dfb439fbabcfcf))
+
 ## [0.1.4](https://github.com/nol166/clai/compare/v0.1.3...v0.1.4) (2026-04-26)
 
 
