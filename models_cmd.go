@@ -9,13 +9,13 @@ import (
 	"github.com/nol166/clai/internal/provider"
 )
 
-func runModels(args []string) {
+func runModels(args []string, profileArg string) {
 	if len(args) == 0 || args[0] != "list" {
 		fmt.Fprintln(os.Stderr, "usage: clai models list")
 		os.Exit(1)
 	}
 
-	cfg, err := config.Load()
+	cfg, err := config.LoadProfile(profileArg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "config error: %v\n", err)
 		os.Exit(1)
@@ -33,7 +33,7 @@ func runModels(args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Models for %s:\n\n", cfg.Provider)
+	fmt.Printf("Models for %s (profile: %s):\n\n", cfg.Provider, cfg.ProfileName)
 	for _, m := range models {
 		if m == cfg.Model {
 			fmt.Printf("  %s  (current)\n", m)

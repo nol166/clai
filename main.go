@@ -37,17 +37,33 @@ func main() {
 		os.Exit(0)
 	}
 
-	// extract -c/--copy flag
+	// extract -c/--copy and -p/--profile flags
 	copyFlag := false
+	profileFlag := ""
 	filtered := args[:0]
-	for _, a := range args {
-		if a == "-c" || a == "--copy" {
+	for i := 0; i < len(args); i++ {
+		a := args[i]
+		switch {
+		case a == "-c" || a == "--copy":
 			copyFlag = true
-		} else {
+		case a == "-p" || a == "--profile":
+			if i+1 >= len(args) {
+				fmt.Fprintln(os.Stderr, "error: -p/--profile requires a name")
+				os.Exit(1)
+			}
+			i++
+			profileFlag = args[i]
+		case strings.HasPrefix(a, "--profile="):
+			profileFlag = strings.TrimPrefix(a, "--profile=")
+		default:
 			filtered = append(filtered, a)
 		}
 	}
 	args = filtered
+	if len(args) == 0 {
+		printHelp()
+		os.Exit(0)
+	}
 
 	switch args[0] {
 	case "--version", "-v":
@@ -57,14 +73,14 @@ func main() {
 		printHelp()
 		return
 	case "config":
-		runConfig(args[1:])
+		runConfig(args[1:], profileFlag)
 		return
 	case "models":
-		runModels(args[1:])
+		runModels(args[1:], profileFlag)
 		return
 	}
 
-	cfg, err := config.Load()
+	cfg, err := config.LoadProfile(profileFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "config error: %v\n", err)
 		os.Exit(1)
