@@ -68,6 +68,8 @@ func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w 
 	}
 
 	scanner := bufio.NewScanner(resp.Body)
+	// default 64K line cap is too small for large SSE chunks
+	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if !strings.HasPrefix(line, "data: ") {

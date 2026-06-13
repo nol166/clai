@@ -64,10 +64,48 @@ Config is stored at `~/.config/clai/config.yaml` (respects `XDG_CONFIG_HOME`). E
 
 | Env var | Config key | Default | Description |
 |---|---|---|---|
+| `CLAI_PROFILE` | `active` | `default` | Which profile to use |
 | `CLAI_PROVIDER` | `provider` | `openai` | `openai`, `anthropic`, `litellm`, `ollama` |
 | `CLAI_API_KEY` | `api_key` | — | API key (falls back to `OPENAI_API_KEY` / `ANTHROPIC_API_KEY`) |
 | `CLAI_MODEL` | `model` | `gpt-4o-mini` | Model name |
 | `CLAI_BASE_URL` | `base_url` | — | Custom API base URL (LiteLLM, Ollama, etc.) |
+
+### Profiles
+
+Keep independent provider/model/key combos and switch between them:
+
+```bash
+# create profiles
+clai config profile add work --provider anthropic --model claude-haiku-4-5-20251001 --api-key sk-ant-...
+clai config profile add local --provider ollama --model llama3.2
+
+# switch the default
+clai config profile use local
+
+# one-shot override without switching
+clai -p work "explain this stack trace"
+
+# manage
+clai config profile list
+clai config profile delete local
+```
+
+All commands (`config list`, `config set`, `models list`, queries) operate on the active profile, or the one given with `-p/--profile`. An existing flat config file is migrated automatically into a `default` profile.
+
+Profiles are stored under a `profiles` key:
+
+```yaml
+active: local
+profiles:
+  work:
+    provider: anthropic
+    api_key: sk-ant-...
+    model: claude-haiku-4-5-20251001
+  local:
+    provider: ollama
+    model: llama3.2
+    base_url: http://localhost:11434/v1
+```
 
 ### Non-OpenAI providers
 
@@ -100,12 +138,18 @@ clai -c <query>           Ask and copy response to clipboard
 clai --version            Print version
 clai --help               Print help
 
-clai config               Interactive setup wizard
+clai config               Interactive setup wizard (edits active profile)
 clai config list          Show current config
 clai config set <k> <v>   Set a config value (provider, model, api-key, base-url)
 clai config clipboard     Toggle auto-copy on/off
 
-clai models list          List available models for the current provider
+clai config profile add <name> [flags]   Create/update a profile
+clai config profile use <name>           Switch the active profile
+clai config profile list                 List profiles
+clai config profile delete <name>        Delete a profile
+clai -p <name> <query>                   Use a profile for one invocation
+
+clai models list          List available models for the current profile
 ```
 
 `clai` automatically injects your OS, shell, and current working directory into every query, so answers like *"list all .go files here"* are path-aware without any extra effort.
