@@ -20,12 +20,13 @@ const (
 )
 
 type anthropicProvider struct {
-	apiKey string
-	model  string
+	apiKey  string
+	model   string
+	baseURL string
 }
 
 func newAnthropic(cfg *config.Config) *anthropicProvider {
-	return &anthropicProvider{apiKey: cfg.APIKey, model: cfg.Model}
+	return &anthropicProvider{apiKey: cfg.APIKey, model: cfg.Model, baseURL: anthropicBase}
 }
 
 func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w io.Writer) error {
@@ -39,7 +40,7 @@ func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w 
 		},
 	})
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, anthropicBase+"/messages", bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, p.baseURL+"/messages", bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
@@ -87,7 +88,7 @@ func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w 
 }
 
 func (p *anthropicProvider) ListModels(ctx context.Context) ([]string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, anthropicBase+"/models", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.baseURL+"/models", nil)
 	if err != nil {
 		return nil, err
 	}
