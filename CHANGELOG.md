@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/nol166/clai/compare/v0.3.0...v0.3.1) (2026-07-11)
+
+
+### Bug Fixes
+
+* clipboard support on Windows and WSL ([a98e380](https://github.com/nol166/clai/commit/a98e3809a9238a270597b5a45c8f3d8c738199f8))
+* clipboard support on Windows and WSL ([7a606c1](https://github.com/nol166/clai/commit/7a606c1d7f7ad22fd78e2a0b979e52c2e02917f5))
+
 ## [0.3.0](https://github.com/nol166/clai/compare/v0.2.2...v0.3.0) (2026-06-13)
 
 
