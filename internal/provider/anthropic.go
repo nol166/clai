@@ -26,7 +26,11 @@ type anthropicProvider struct {
 }
 
 func newAnthropic(cfg *config.Config) *anthropicProvider {
-	return &anthropicProvider{apiKey: cfg.APIKey, model: cfg.Model, baseURL: anthropicBase}
+	base := cfg.BaseURL
+	if base == "" {
+		base = anthropicBase
+	}
+	return &anthropicProvider{apiKey: cfg.APIKey, model: cfg.Model, baseURL: base}
 }
 
 func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w io.Writer) error {
