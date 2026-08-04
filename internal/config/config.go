@@ -11,10 +11,11 @@ import (
 
 // Profile holds the provider settings for one named profile.
 type Profile struct {
-	Provider string `yaml:"provider,omitempty"`
-	APIKey   string `yaml:"api_key,omitempty"`
-	Model    string `yaml:"model,omitempty"`
-	BaseURL  string `yaml:"base_url,omitempty"`
+	Provider     string `yaml:"provider,omitempty"`
+	APIKey       string `yaml:"api_key,omitempty"`
+	APIKeyHeader string `yaml:"api_key_header,omitempty"`
+	Model        string `yaml:"model,omitempty"`
+	BaseURL      string `yaml:"base_url,omitempty"`
 }
 
 // File is the on-disk config: named profiles plus global settings.
@@ -36,6 +37,7 @@ type Config struct {
 	ProfileName string
 	Provider    string
 	APIKey      string
+	APIKeyHeader string
 	Model       string
 	BaseURL     string
 	Clipboard   bool
@@ -138,12 +140,13 @@ func LoadProfile(name string) (*Config, error) {
 	}
 
 	cfg := &Config{
-		ProfileName: name,
-		Provider:    p.Provider,
-		APIKey:      p.APIKey,
-		Model:       p.Model,
-		BaseURL:     p.BaseURL,
-		Clipboard:   f.Clipboard,
+		ProfileName:  name,
+		Provider:     p.Provider,
+		APIKey:       p.APIKey,
+		APIKeyHeader: p.APIKeyHeader,
+		Model:        p.Model,
+		BaseURL:      p.BaseURL,
+		Clipboard:    f.Clipboard,
 	}
 	if cfg.Provider == "" {
 		cfg.Provider = "openai"

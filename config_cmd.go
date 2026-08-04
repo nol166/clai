@@ -27,7 +27,7 @@ func runConfig(args []string, profileArg string) {
 	case "set":
 		if len(args) < 3 {
 			fmt.Fprintln(os.Stderr, "usage: clai config set <key> <value>")
-			fmt.Fprintln(os.Stderr, "keys: provider, model, api-key, base-url")
+			fmt.Fprintln(os.Stderr, "keys: provider, model, api-key, base-url, api-key-header")
 			os.Exit(1)
 		}
 		runConfigSet(args[1], args[2], profileArg)
@@ -296,8 +296,10 @@ func runConfigSet(key, value, profileArg string) {
 		shown = redactKey(value)
 	case "base_url":
 		p.BaseURL = value
+	case "api_key_header":
+		p.APIKeyHeader = value
 	default:
-		fmt.Fprintf(os.Stderr, "unknown key %q — valid: provider, model, api-key, base-url\n", key)
+		fmt.Fprintf(os.Stderr, "unknown key %q — valid: provider, model, api-key, base-url, api-key-header\n", key)
 		os.Exit(1)
 	}
 	f.Profiles[name] = p
