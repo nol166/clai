@@ -24,7 +24,7 @@ func TestAnthropicStream(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	p := &anthropicProvider{apiKey: "sk-ant-test", model: "m", baseURL: srv.URL}
+	p := &anthropicProvider{apiKey: "sk-ant-test", apiKeyHeader: "x-api-key", model: "m", baseURL: srv.URL}
 	var buf bytes.Buffer
 	if err := p.Stream(context.Background(), "sys", "query", &buf); err != nil {
 		t.Fatal(err)
@@ -46,7 +46,7 @@ func TestAnthropicStreamHTTPError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	p := &anthropicProvider{apiKey: "bad", model: "m", baseURL: srv.URL}
+	p := &anthropicProvider{apiKey: "bad", apiKeyHeader: "x-api-key", model: "m", baseURL: srv.URL}
 	err := p.Stream(context.Background(), "sys", "query", &bytes.Buffer{})
 	if err == nil || !strings.Contains(err.Error(), "401") {
 		t.Errorf("err = %v, want 401", err)
@@ -63,7 +63,7 @@ func TestAnthropicListModels(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	p := &anthropicProvider{apiKey: "k", model: "m", baseURL: srv.URL}
+	p := &anthropicProvider{apiKey: "k", apiKeyHeader: "x-api-key", model: "m", baseURL: srv.URL}
 	models, err := p.ListModels(context.Background())
 	if err != nil {
 		t.Fatal(err)

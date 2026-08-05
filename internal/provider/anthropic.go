@@ -19,14 +19,26 @@ const (
 	anthropicVersion = "2023-06-01"
 )
 
+func headerOrDefault(h string) string {
+	if h != "" {
+		return h
+	}
+	return "x-api-key"
+}
+
 type anthropicProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
+	apiKey       string
+	apiKeyHeader string
+	model        string
+	baseURL      string
 }
 
 func newAnthropic(cfg *config.Config) *anthropicProvider {
-	return &anthropicProvider{apiKey: cfg.APIKey, model: cfg.Model, baseURL: anthropicBase}
+	base := cfg.BaseURL
+	if base == "" {
+		base = anthropicBase
+	}
+	return &anthropicProvider{apiKey: cfg.APIKey, apiKeyHeader: headerOrDefault(cfg.APIKeyHeader), model: cfg.Model, baseURL: base}
 }
 
 func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w io.Writer) error {
@@ -45,7 +57,7 @@ func (p *anthropicProvider) Stream(ctx context.Context, system, query string, w 
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", p.apiKey)
+	req.Header.Set(p.apiKeyHeader, p.apiKey)
 	req.Header.Set("anthropic-version", anthropicVersion)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -92,7 +104,7 @@ func (p *anthropicProvider) ListModels(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("x-api-key", p.apiKey)
+	req.Header.Set(p.apiKeyHeader, p.apiKey)
 	req.Header.Set("anthropic-version", anthropicVersion)
 
 	resp, err := http.DefaultClient.Do(req)
