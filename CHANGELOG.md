@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0](https://github.com/nol166/clai/compare/v0.3.1...v0.4.0) (2026-08-05)
+
+
+### Features
+
+* add configurable api_key_header for anthropic provider ([73fa6a4](https://github.com/nol166/clai/commit/73fa6a4c13af8a4a0d5a0ebd04a1eca06367ca77))
+* allow custom base URL for anthropic provider ([80666de](https://github.com/nol166/clai/commit/80666de85bc6d866a8899667f946e4c3e7ecd619))
+* custom base URL and configurable api_key_header for anthropic provider ([1dfd456](https://github.com/nol166/clai/commit/1dfd456b45336df4a6099ac5a5659389182a610b))
+
 ## [0.3.1](https://github.com/nol166/clai/compare/v0.3.0...v0.3.1) (2026-07-11)
 
 
