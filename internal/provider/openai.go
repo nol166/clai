@@ -14,29 +14,37 @@ import (
 	"github.com/nol166/clai/internal/config"
 )
 
-const defaultOpenAIBase = "https://api.openai.com/v1"
-const defaultOllamaBase = "http://localhost:11434/v1"
+const (
+	defaultOpenAIBase     = "https://api.openai.com/v1"
+	defaultOllamaBase     = "http://localhost:11434/v1"
+	defaultOpenRouterBase = "https://openrouter.ai/api/v1"
+)
 
 type openAIProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
+	apiKey     string
+	model      string
+	baseURL    string
+	openRouter bool
 }
 
 func newOpenAI(cfg *config.Config) *openAIProvider {
 	base := cfg.BaseURL
+	openRouter := cfg.Provider == "openrouter"
 	if base == "" {
 		switch cfg.Provider {
 		case "ollama":
 			base = defaultOllamaBase
+		case "openrouter":
+			base = defaultOpenRouterBase
 		default:
 			base = defaultOpenAIBase
 		}
 	}
 	return &openAIProvider{
-		apiKey:  cfg.APIKey,
-		model:   cfg.Model,
-		baseURL: strings.TrimRight(base, "/"),
+		apiKey:     cfg.APIKey,
+		model:      cfg.Model,
+		baseURL:    strings.TrimRight(base, "/"),
+		openRouter: openRouter,
 	}
 }
 
@@ -57,6 +65,9 @@ func (p *openAIProvider) Stream(ctx context.Context, system, query string, w io.
 	req.Header.Set("Content-Type", "application/json")
 	if p.apiKey != "" {
 		req.Header.Set("Authorization", "Bearer "+p.apiKey)
+	}
+	if p.openRouter {
+		req.Header.Set("X-Title", "clai")
 	}
 
 	resp, err := http.DefaultClient.Do(req)

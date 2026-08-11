@@ -16,11 +16,11 @@ type Provider interface {
 
 func New(cfg *config.Config) (Provider, error) {
 	switch cfg.Provider {
-	case "openai", "litellm", "ollama":
+	case "openai", "litellm", "ollama", "openrouter":
 		return newOpenAI(cfg), nil
 	case "anthropic":
 		return newAnthropic(cfg), nil
 	default:
-		return nil, fmt.Errorf("unknown provider %q — valid: openai, anthropic, litellm, ollama", cfg.Provider)
+		return nil, fmt.Errorf("unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter", cfg.Provider)
 	}
 }

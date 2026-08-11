@@ -13,7 +13,7 @@ func setupConfig(t *testing.T, contents string) string {
 	t.Helper()
 	dir := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", dir)
-	for _, v := range []string{"CLAI_PROFILE", "CLAI_PROVIDER", "CLAI_API_KEY", "CLAI_MODEL", "CLAI_BASE_URL", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"} {
+	for _, v := range []string{"CLAI_PROFILE", "CLAI_PROVIDER", "CLAI_API_KEY", "CLAI_MODEL", "CLAI_BASE_URL", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "ANTHROPIC_API_KEY"} {
 		t.Setenv(v, "")
 	}
 	if contents != "" {
@@ -177,6 +177,36 @@ profiles:
 	}
 	if cfg.Model != "claude-haiku-4-5-20251001" {
 		t.Errorf("model default not applied: %+v", cfg)
+	}
+}
+
+func TestOpenRouterDefaults(t *testing.T) {
+	setupConfig(t, `active: a
+profiles:
+  a:
+    provider: openrouter
+`)
+	t.Setenv("OPENROUTER_API_KEY", "sk-or-env")
+	cfg, err := Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.APIKey != "sk-or-env" {
+		t.Errorf("openrouter key fallback not applied: %+v", cfg)
+	}
+	if cfg.Model != "openai/gpt-4o-mini" {
+		t.Errorf("openrouter model default not applied: %+v", cfg)
+	}
+
+	// falls back to OPENAI_API_KEY when no OpenRouter key is set
+	t.Setenv("OPENROUTER_API_KEY", "")
+	t.Setenv("OPENAI_API_KEY", "sk-fallback")
+	cfg, err = Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.APIKey != "sk-fallback" {
+		t.Errorf("openrouter OPENAI_API_KEY fallback not applied: %+v", cfg)
 	}
 }
 

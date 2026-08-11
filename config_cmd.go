@@ -143,7 +143,7 @@ func runProfileAdd(name string, flags []string) {
 		switch flag {
 		case "--provider":
 			if !isValidProvider(value) {
-				fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama\n", value)
+				fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter\n", value)
 				os.Exit(1)
 			}
 			p.Provider = value
@@ -279,7 +279,7 @@ func runConfigSet(key, value, profileArg string) {
 	switch strings.ToLower(strings.ReplaceAll(key, "-", "_")) {
 	case "provider":
 		if !isValidProvider(value) {
-			fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama\n", value)
+			fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter\n", value)
 			os.Exit(1)
 		}
 		p.Provider = value
@@ -334,7 +334,7 @@ func runConfigInteractive(profileArg string) {
 	fmt.Println()
 
 	// provider
-	fmt.Printf("Provider (openai/anthropic/litellm/ollama) [%s]: ", cfg.Provider)
+	fmt.Printf("Provider (openai/anthropic/litellm/ollama/openrouter) [%s]: ", cfg.Provider)
 	if p := readLine(reader); p != "" {
 		if !isValidProvider(p) {
 			fmt.Fprintf(os.Stderr, "unknown provider %q\n", p)
@@ -365,8 +365,8 @@ func runConfigInteractive(profileArg string) {
 		cfg.APIKey = ""
 	}
 
-	// base url (only relevant for litellm/ollama) — before model so we can query the provider
-	if cfg.Provider == "litellm" || cfg.Provider == "ollama" {
+	// base url (only relevant for litellm/ollama/openrouter) — before model so we can query the provider
+	if cfg.Provider == "litellm" || cfg.Provider == "ollama" || cfg.Provider == "openrouter" {
 		defaultURL := defaultBaseURLFor(cfg.Provider)
 		hint := cfg.BaseURL
 		if hint == "" {
@@ -442,14 +442,14 @@ func readLine(r *bufio.Reader) string {
 
 func isValidProvider(p string) bool {
 	switch p {
-	case "openai", "anthropic", "litellm", "ollama":
+	case "openai", "anthropic", "litellm", "ollama", "openrouter":
 		return true
 	}
 	return false
 }
 
 func isDefaultModel(m string) bool {
-	for _, p := range []string{"openai", "anthropic", "litellm", "ollama"} {
+	for _, p := range []string{"openai", "anthropic", "litellm", "ollama", "openrouter"} {
 		if defaultModelFor(p) == m {
 			return true
 		}
@@ -463,6 +463,8 @@ func defaultModelFor(provider string) string {
 		return "claude-haiku-4-5-20251001"
 	case "ollama":
 		return ""
+	case "openrouter":
+		return "openai/gpt-4o-mini"
 	default:
 		return "gpt-4o-mini"
 	}

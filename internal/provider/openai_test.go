@@ -112,7 +112,7 @@ func TestOpenAIListModels(t *testing.T) {
 }
 
 func TestNewProviderDispatch(t *testing.T) {
-	for _, name := range []string{"openai", "litellm", "ollama", "anthropic"} {
+	for _, name := range []string{"openai", "litellm", "ollama", "openrouter", "anthropic"} {
 		if _, err := New(&config.Config{Provider: name}); err != nil {
 			t.Errorf("New(%s) failed: %v", name, err)
 		}
@@ -130,5 +130,32 @@ func TestOllamaDefaultBaseURL(t *testing.T) {
 	p = newOpenAI(&config.Config{Provider: "openai"})
 	if p.baseURL != defaultOpenAIBase {
 		t.Errorf("baseURL = %q, want %q", p.baseURL, defaultOpenAIBase)
+	}
+	p = newOpenAI(&config.Config{Provider: "openrouter"})
+	if p.baseURL != defaultOpenRouterBase {
+		t.Errorf("baseURL = %q, want %q", p.baseURL, defaultOpenRouterBase)
+	}
+	if !p.openRouter {
+		t.Error("openrouter flag not set")
+	}
+	if p = newOpenAI(&config.Config{Provider: "openai", BaseURL: "https://example.com/v1"}); p.openRouter {
+		t.Error("openrouter flag set for openai with custom base URL")
+	}
+}
+
+func TestOpenRouterSendsXTitle(t *testing.T) {
+	var gotTitle string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotTitle = r.Header.Get("X-Title")
+		fmt.Fprint(w, "data: [DONE]\n\n")
+	}))
+	defer srv.Close()
+
+	p := newOpenAI(&config.Config{Provider: "openrouter", Model: "m", BaseURL: srv.URL})
+	if err := p.Stream(context.Background(), "sys", "query", &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	if gotTitle != "clai" {
+		t.Errorf("X-Title = %q, want clai", gotTitle)
 	}
 }

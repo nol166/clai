@@ -13,7 +13,7 @@ git diff HEAD~1 --stat | tail -1
 
 No browser, no context switching, no preamble — just the answer. Your OS, shell, and working directory are injected into every query, so answers are path-aware for free.
 
-Supports **OpenAI**, **Anthropic**, and any **OpenAI-compatible** endpoint (Ollama, LiteLLM, …).
+Supports **OpenAI**, **Anthropic**, **OpenRouter**, and any **OpenAI-compatible** endpoint (Ollama, LiteLLM, …).
 
 ## Install
 
@@ -46,6 +46,7 @@ Keep independent provider/model/key combos and switch at will:
 clai config profile add work --provider anthropic --model claude-haiku-4-5-20251001 --api-key sk-ant-...
 clai config profile add local --provider ollama --model llama3.2   # no key needed
 clai config profile add proxy --provider litellm --base-url http://localhost:4000/v1 --model gpt-4o
+clai config profile add aggregate --provider openrouter --model anthropic/claude-sonnet-4
 
 clai config profile use local      # switch the default
 clai -p work "explain this trace"  # one-shot, no switch
@@ -61,7 +62,7 @@ Stored at `~/.config/clai/config.yaml` (respects `XDG_CONFIG_HOME`). Env vars ov
 | Env var | Default | Description |
 |---|---|---|
 | `CLAI_PROFILE` | `default` | Which profile to use |
-| `CLAI_PROVIDER` | `openai` | `openai`, `anthropic`, `litellm`, `ollama` |
+| `CLAI_PROVIDER` | `openai` | `openai`, `anthropic`, `litellm`, `ollama`, `openrouter` |
 | `CLAI_API_KEY` | — | API key (falls back to `OPENAI_API_KEY` / `ANTHROPIC_API_KEY`) |
 | `CLAI_MODEL` | `gpt-4o-mini` | Model name |
 | `CLAI_BASE_URL` | — | Custom API base URL (Ollama defaults to `http://localhost:11434/v1`) |
