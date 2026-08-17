@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/nol166/clai/compare/v0.4.0...v0.5.0) (2026-08-17)
+
+
+### Features
+
+* add config profile update subcommand ([41bac73](https://github.com/nol166/clai/commit/41bac7365a2f9a24f7aba8edb444a4ab5173ca6b))
+* add openrouter provider ([1a4dc7d](https://github.com/nol166/clai/commit/1a4dc7d0fd7866fcc100364393acb38e4e718359))
+* add openrouter provider ([59276e6](https://github.com/nol166/clai/commit/59276e648971d63832e9db8b6f5a36e29df602d0))
+
 ## [0.4.0](https://github.com/nol166/clai/compare/v0.3.1...v0.4.0) (2026-08-05)
 
 
