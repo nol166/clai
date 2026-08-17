@@ -48,6 +48,7 @@ clai config profile add local --provider ollama --model llama3.2   # no key need
 clai config profile add proxy --provider litellm --base-url http://localhost:4000/v1 --model gpt-4o
 clai config profile add aggregate --provider openrouter --model anthropic/claude-sonnet-4
 
+clai config profile update work --model claude-sonnet-4-20250514   # modify an existing profile
 clai config profile use local      # switch the default
 clai -p work "explain this trace"  # one-shot, no switch
 clai config profile list

@@ -30,6 +30,7 @@ Config:
 
 Profiles:
   clai config profile add <name> [--provider p] [--model m] [--api-key k] [--base-url u]
+  clai config profile update <name> [--provider p] [--model m] [--api-key k]
   clai config profile use <name>     switch active profile
   clai config profile list           list profiles
   clai config profile delete <name>  delete a profile
