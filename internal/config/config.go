@@ -169,6 +169,11 @@ func LoadProfile(name string) (*Config, error) {
 		switch cfg.Provider {
 		case "openai", "litellm":
 			cfg.APIKey = os.Getenv("OPENAI_API_KEY")
+		case "openrouter":
+			cfg.APIKey = os.Getenv("OPENROUTER_API_KEY")
+			if cfg.APIKey == "" {
+				cfg.APIKey = os.Getenv("OPENAI_API_KEY")
+			}
 		case "anthropic":
 			cfg.APIKey = os.Getenv("ANTHROPIC_API_KEY")
 		}
@@ -178,6 +183,8 @@ func LoadProfile(name string) (*Config, error) {
 		switch cfg.Provider {
 		case "openai", "litellm":
 			cfg.Model = "gpt-4o-mini"
+		case "openrouter":
+			cfg.Model = "openai/gpt-4o-mini"
 		case "anthropic":
 			cfg.Model = "claude-haiku-4-5-20251001"
 		}

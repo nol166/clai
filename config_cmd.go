@@ -43,7 +43,7 @@ func runConfig(args []string, profileArg string) {
 
 func runConfigProfile(args []string) {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: clai config profile <add|use|list|delete> [name]")
+		fmt.Fprintln(os.Stderr, "usage: clai config profile <add|update|use|list|delete> [name]")
 		os.Exit(1)
 	}
 	switch args[0] {
@@ -61,6 +61,12 @@ func runConfigProfile(args []string) {
 			os.Exit(1)
 		}
 		runProfileAdd(args[1], args[2:])
+	case "update":
+		if len(args) < 2 {
+			fmt.Fprintln(os.Stderr, "usage: clai config profile update <name> [--provider p] [--model m] [--api-key k] [--base-url u]")
+			os.Exit(1)
+		}
+		runProfileUpdate(args[1], args[2:])
 	case "delete", "remove":
 		if len(args) < 2 {
 			fmt.Fprintln(os.Stderr, "usage: clai config profile delete <name>")
@@ -68,7 +74,7 @@ func runConfigProfile(args []string) {
 		}
 		runProfileDelete(args[1])
 	default:
-		fmt.Fprintf(os.Stderr, "unknown profile command %q — valid: add, use, list, delete\n", args[0])
+		fmt.Fprintf(os.Stderr, "unknown profile command %q — valid: add, update, use, list, delete\n", args[0])
 		os.Exit(1)
 	}
 }
@@ -143,7 +149,7 @@ func runProfileAdd(name string, flags []string) {
 		switch flag {
 		case "--provider":
 			if !isValidProvider(value) {
-				fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama\n", value)
+				fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter\n", value)
 				os.Exit(1)
 			}
 			p.Provider = value
@@ -183,6 +189,70 @@ func runProfileAdd(name string, flags []string) {
 	fmt.Printf("saved profile %q (provider=%s model=%s)\n", name, p.Provider, p.Model)
 	if f.Active != name {
 		fmt.Printf("switch to it with: clai config profile use %s\n", name)
+	}
+}
+
+func runProfileUpdate(name string, flags []string) {
+	f, err := config.LoadFile()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+	if _, ok := f.Profiles[name]; !ok {
+		fmt.Fprintf(os.Stderr, "profile %q not found (have: %v)\n", name, f.ProfileNames())
+		os.Exit(1)
+	}
+	if len(flags) == 0 {
+		// no flags — run the interactive wizard for this profile
+		runConfigInteractive(name)
+		return
+	}
+
+	p := f.Profiles[name]
+	for i := 0; i < len(flags); i++ {
+		flag := flags[i]
+		var value string
+		if eq := strings.Index(flag, "="); eq >= 0 {
+			flag, value = flag[:eq], flag[eq+1:]
+		} else {
+			if i+1 >= len(flags) {
+				fmt.Fprintf(os.Stderr, "flag %s requires a value\n", flag)
+				os.Exit(1)
+			}
+			i++
+			value = flags[i]
+		}
+		shown := value
+		switch flag {
+		case "--provider":
+			if !isValidProvider(value) {
+				fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter\n", value)
+				os.Exit(1)
+			}
+			p.Provider = value
+		case "--model":
+			p.Model = value
+		case "--api-key":
+			p.APIKey = value
+			shown = redactKey(value)
+		case "--base-url":
+			p.BaseURL = value
+		case "--api-key-header":
+			p.APIKeyHeader = value
+		default:
+			fmt.Fprintf(os.Stderr, "unknown flag %q — valid: --provider, --model, --api-key, --base-url\n", flag)
+			os.Exit(1)
+		}
+		if p.Provider == "ollama" {
+			p.APIKey = ""
+		}
+		fmt.Printf("updated %s = %s\n", flag, shown)
+	}
+
+	f.Profiles[name] = p
+	if err := config.SaveFile(f); err != nil {
+		fmt.Fprintf(os.Stderr, "error saving: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -279,7 +349,7 @@ func runConfigSet(key, value, profileArg string) {
 	switch strings.ToLower(strings.ReplaceAll(key, "-", "_")) {
 	case "provider":
 		if !isValidProvider(value) {
-			fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama\n", value)
+			fmt.Fprintf(os.Stderr, "unknown provider %q — valid: openai, anthropic, litellm, ollama, openrouter\n", value)
 			os.Exit(1)
 		}
 		p.Provider = value
@@ -334,7 +404,7 @@ func runConfigInteractive(profileArg string) {
 	fmt.Println()
 
 	// provider
-	fmt.Printf("Provider (openai/anthropic/litellm/ollama) [%s]: ", cfg.Provider)
+	fmt.Printf("Provider (openai/anthropic/litellm/ollama/openrouter) [%s]: ", cfg.Provider)
 	if p := readLine(reader); p != "" {
 		if !isValidProvider(p) {
 			fmt.Fprintf(os.Stderr, "unknown provider %q\n", p)
@@ -365,8 +435,8 @@ func runConfigInteractive(profileArg string) {
 		cfg.APIKey = ""
 	}
 
-	// base url (only relevant for litellm/ollama) — before model so we can query the provider
-	if cfg.Provider == "litellm" || cfg.Provider == "ollama" {
+	// base url (only relevant for litellm/ollama/openrouter) — before model so we can query the provider
+	if cfg.Provider == "litellm" || cfg.Provider == "ollama" || cfg.Provider == "openrouter" {
 		defaultURL := defaultBaseURLFor(cfg.Provider)
 		hint := cfg.BaseURL
 		if hint == "" {
@@ -442,14 +512,14 @@ func readLine(r *bufio.Reader) string {
 
 func isValidProvider(p string) bool {
 	switch p {
-	case "openai", "anthropic", "litellm", "ollama":
+	case "openai", "anthropic", "litellm", "ollama", "openrouter":
 		return true
 	}
 	return false
 }
 
 func isDefaultModel(m string) bool {
-	for _, p := range []string{"openai", "anthropic", "litellm", "ollama"} {
+	for _, p := range []string{"openai", "anthropic", "litellm", "ollama", "openrouter"} {
 		if defaultModelFor(p) == m {
 			return true
 		}
@@ -463,6 +533,8 @@ func defaultModelFor(provider string) string {
 		return "claude-haiku-4-5-20251001"
 	case "ollama":
 		return ""
+	case "openrouter":
+		return "openai/gpt-4o-mini"
 	default:
 		return "gpt-4o-mini"
 	}

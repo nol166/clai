@@ -84,6 +84,21 @@ func TestProfileLifecycle(t *testing.T) {
 		t.Errorf("config list after switch:\n%s", out)
 	}
 
+	// update an existing profile
+	out, _, code = runCLI(t, dir, "config", "profile", "update", "work", "--model", "claude-sonnet-4-20250514")
+	if code != 0 || !strings.Contains(out, "updated --model") {
+		t.Errorf("update work: code=%d out=%s", code, out)
+	}
+	out, _, _ = runCLI(t, dir, "config", "list")
+	if !strings.Contains(out, "claude-sonnet-4-20250514") {
+		t.Errorf("list after update:\n%s", out)
+	}
+	// updating a nonexistent profile fails
+	_, ghostErr, code := runCLI(t, dir, "config", "profile", "update", "ghost", "--model", "m")
+	if code == 0 || !strings.Contains(ghostErr, "not found") {
+		t.Errorf("update ghost: code=%d stderr=%s", code, ghostErr)
+	}
+
 	// deleting the active profile is refused
 	_, errOut, code := runCLI(t, dir, "config", "profile", "delete", "work")
 	if code == 0 || !strings.Contains(errOut, "is active") {
@@ -243,7 +258,7 @@ func TestHelpMentionsProfiles(t *testing.T) {
 	if code != 0 {
 		t.Fatal("help failed")
 	}
-	for _, want := range []string{"profile add", "profile use", "-p, --profile"} {
+	for _, want := range []string{"profile add", "profile update", "profile use", "-p, --profile"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("help missing %q", want)
 		}

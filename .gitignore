@@ -2,3 +2,5 @@
 clai
 *.exe
 dist/
+.DS_store
+.env
